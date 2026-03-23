@@ -15,6 +15,7 @@ from .Views.farm_views import (
     PortfolioListCreateView,
     PortfolioDetailView
 )
+from django.conf import settings
 
 
 urlpatterns = [
@@ -33,3 +34,6 @@ urlpatterns = [
     path('farms/<int:farm_pk>/exports/<int:export_pk>/photos/',      PortfolioListCreateView.as_view(), name='portfolio_list_create'),
     path('farms/<int:farm_pk>/exports/<int:export_pk>/photos/<int:pk>/', PortfolioDetailView.as_view(), name='portfolio_detail'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [path('test/', test, name='test'), path('register/admin', registerAdmin, name='register_admin')]
