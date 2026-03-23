@@ -5,7 +5,8 @@ from rest_framework_simplejwt.views import (
 )
 from .Views.user_views import ( registerUser, 
                                 MyTokenObtainPairView,
-                                test,)
+                                test,
+                                registerAdmin)
 from .Views.farm_views import (
     FarmListCreateView,
     FarmDetailView,
@@ -21,6 +22,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', registerUser, name='register_user'),
     path('register/farmer', registerUser, name='register_farmer'),
+    path('register/admin', registerAdmin, name='register_admin'),
     
     path('farms/',                 FarmListCreateView.as_view(),    name='farm_list_create'),
     path('farms/<int:pk>/',        FarmDetailView.as_view(),        name='farm_detail'),

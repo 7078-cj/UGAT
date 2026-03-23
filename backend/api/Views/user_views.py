@@ -22,7 +22,15 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-    
+
+@api_view(['POST'])
+def registerAdmin(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        Profile.objects.create(user=user, role='admin')
+        return Response({'message': 'Admin registered successfully'}, status=201)
+    return Response(serializer.errors, status=400)   
         
 @api_view(['POST'])
 def registerUser(request):

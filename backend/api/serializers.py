@@ -57,7 +57,11 @@ class ExportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Export
-        fields = ['id', 'farm', 'price', 'stocks', 'created_at', 'portfolio']
+        fields = [
+            'id', 'farm', 'price', 'stocks',
+            'quality', 'temperature', 'soil_quality',
+            'created_at', 'portfolio',
+        ]
 
 
 class FarmSerializer(serializers.ModelSerializer):
