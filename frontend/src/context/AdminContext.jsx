@@ -1,12 +1,12 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { getRequest, postRequest } from "../utils/requests/requests";
+import AuthContext from "./AuthContext";
 
 const AdminContext = createContext(null);
 
 export function AdminProvider({ children }) {
-    const [token] = useState(
-        JSON.parse(localStorage.getItem("authTokens")) || null
-    );
+    const { authTok } = useContext(AuthContext);
+    const token = authTok;
 
     const [farmers, setFarmers] = useState([]);
     const [customers, setCustomers] = useState([]);

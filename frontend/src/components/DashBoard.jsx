@@ -4,8 +4,9 @@ import StatCard from "./StatCard";
 import Badge from "./Badge";
 import UserCell from "./UserCell";
 import DataTable, { Td } from "./DataTable";
+import FarmMap from "./FarmMap";
 import { Card, Grid, Group, Paper, SimpleGrid, Stack, Text, ThemeIcon, Title } from "@mantine/core";
-import { IconArrowRight, IconPlant2, IconTractor, IconUserPlus, IconUsersGroup } from "@tabler/icons-react";
+import { IconArrowRight, IconMapPin, IconPlant2, IconTractor, IconUserPlus, IconUsersGroup } from "@tabler/icons-react";
 import AuthContext from "../context/AuthContext";
 
 const QUICK = [
@@ -14,16 +15,10 @@ const QUICK = [
 ];
 
 export default function Dashboard({ onRegister }) {
-    const { farmers, customers, farms,
-            fetchFarmers, fetchCustomers, fetchFarms,
-            loading } = useAdmin();
-    const {token} = useContext(AuthContext)
+    
+        const { farmers, customers, farms,
+                loading, errors, markers } = useAdmin();
 
-    useEffect(() => {
-        fetchFarmers();
-        fetchCustomers();
-        fetchFarms();
-    }, [token]);
 
     const isLoading = loading.farmers || loading.farms;
     const recentFarmers = [...farmers].slice(-3).reverse();
@@ -99,6 +94,22 @@ export default function Dashboard({ onRegister }) {
             ))}
           </DataTable>
         </Stack>
+
+        <Card>
+          <Stack gap="sm">
+            <Group gap="xs">
+              <ThemeIcon variant="light" color="ube">
+                <IconMapPin size={16} />
+              </ThemeIcon>
+              <Title order={4}>Farm Locations</Title>
+            </Group>
+            <FarmMap
+              markers={markers}
+              loading={loading.farms}
+              error={errors.farms}
+            />
+          </Stack>
+        </Card>
       </Stack>
     );
 }

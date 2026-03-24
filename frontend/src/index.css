@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+/* Keep Leaflet map layers below app overlays/modals */
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom,
+.leaflet-control {
+  z-index: 1 !important;
+}

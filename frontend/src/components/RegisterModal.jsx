@@ -57,7 +57,15 @@ export default function RegisterModal({ role, onClose }) {
     };
 
     return (
-        <Modal opened onClose={onClose} centered title={`Register ${isFarmer ? "Farmer" : "Customer"}`} size="lg">
+        <Modal
+          opened
+          onClose={onClose}
+          centered
+          title={`Register ${isFarmer ? "Farmer" : "Customer"}`}
+          size="lg"
+          zIndex={3000}
+          overlayProps={{ opacity: 0.55, blur: 2 }}
+        >
           {success ? (
             <Stack align="center" py="xl">
               <IconCheck size={24} color="green" />

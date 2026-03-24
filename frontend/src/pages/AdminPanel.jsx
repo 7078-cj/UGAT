@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Sidebar from "../components/SideBar";
 import TopBar from "../components/TopBar";
 import Dashboard from "../components/DashBoard";
@@ -7,10 +7,23 @@ import CustomersTable from "../components/CustomersTable";
 import FarmsTable from "../components/FarmsTable";
 import RegisterModal from "../components/RegisterModal";
 import { AppShell } from "@mantine/core";
+import { useAdmin } from "../context/AdminContext";
+import AuthContext from "../context/AuthContext";
 
 export default function AdminPanel() {
     const [tab, setTab] = useState("dashboard");
     const [modal, setModal] = useState(null); // "farmer" | "customer" | null
+
+    const { 
+                fetchFarmers, fetchCustomers, fetchFarms, } = useAdmin();
+        const {authTok} = useContext(AuthContext)
+
+      useEffect(() => {
+        if (!authTok?.access) return;
+        fetchFarmers();
+        fetchCustomers();
+        fetchFarms();
+    }, [authTok?.access, fetchFarmers, fetchCustomers, fetchFarms]);
 
     return (
         <AppShell
