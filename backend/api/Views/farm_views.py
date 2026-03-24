@@ -19,6 +19,11 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
+
+        # Admin bypass
+        if hasattr(request.user, 'profile') and request.user.profile.role == 'admin':
+            return True
+
         if hasattr(obj, 'owner'):
             return obj.owner == request.user
         if hasattr(obj, 'farm') and obj.farm is not None:
@@ -90,7 +95,7 @@ class FarmDetailView(RetrieveUpdateDestroyAPIView):
 
 class ExportListCreateView(ListCreateAPIView):
     serializer_class = ExportSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_farm(self):
         if not hasattr(self, '_farm'):
@@ -106,9 +111,9 @@ class ExportListCreateView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         farm = self.get_farm()
-        if farm.owner != self.request.user:
-            from rest_framework.exceptions import PermissionDenied
-            raise PermissionDenied('You do not own this farm.')
+        # if farm.owner != self.request.user:
+        #     from rest_framework.exceptions import PermissionDenied
+        #     raise PermissionDenied('You do not own this farm.')
         serializer.save(farm=farm)
 
 

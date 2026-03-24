@@ -7,7 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
     """Used for registration only"""
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password')
+        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -18,7 +18,7 @@ class PublicUserSerializer(serializers.ModelSerializer):
     """Used for read-only owner display in nested serializers"""
     class Meta:
         model = User
-        fields = ('id', 'username')
+        fields = ('id', 'username', 'first_name', 'last_name')
 
 
 class PortfolioSerializer(serializers.ModelSerializer):
@@ -58,7 +58,7 @@ class ExportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Export
         fields = [
-            'id', 'farm', 'price', 'stocks',
+            'id', 'price', 'stocks',
             'quality', 'temperature', 'soil_quality',
             'created_at', 'portfolio',
         ]

@@ -1,55 +1,79 @@
-import React, { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
-import AuthContext from '../Contexts/AuthContext'
+import { useContext, useState } from 'react'
+import { Link } from 'react-router-dom'
+import AuthContext from '../context/AuthContext'
+import {
+  Anchor,
+  Button,
+  Card,
+  Center,
+  Container,
+  Group,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+  Title
+} from '@mantine/core'
+import { IconLock, IconUser } from '@tabler/icons-react'
 
 function Login() {
   let { loginUser } = useContext(AuthContext)
-  const nav = useNavigate()
+  const [loading, setLoading] = useState(false)
+
+  const onSubmit = async (event) => {
+    setLoading(true)
+    try {
+      await loginUser(event)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-     
+    <Container size="sm" py={48}>
+      <Center mih="85vh">
+        <Card shadow="lg" w="100%" maw={460} p="xl">
+          <Stack gap="lg">
+            <Stack gap={4} align="center">
+              <Title order={2}>Welcome back</Title>
+              <Text c="dimmed" size="sm">Sign in to manage your UGAT admin workspace</Text>
+            </Stack>
 
-      {/* Main content */}
-      <div className="flex-1 flex justify-center items-center p-6">
-        <div className="w-full max-w-md bg-white shadow-md rounded-lg p-8">
-          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
-          <form onSubmit={loginUser} className="flex flex-col space-y-4">
-            <label className="flex flex-col text-gray-700 font-medium">
-              Username
-              <input
-                type="text"
-                name="username"
-                className="mt-1 px-3 py-2 border-2 border-gray-300 rounded-md outline-none focus:border-green-500 text-gray-700"
-              />
-            </label>
+            <form onSubmit={onSubmit}>
+              <Stack gap="sm">
+                <TextInput
+                  required
+                  label="Username"
+                  name="username"
+                  placeholder="Enter your username"
+                  leftSection={<IconUser size={16} />}
+                />
+                <PasswordInput
+                  required
+                  label="Password"
+                  name="password"
+                  placeholder="Enter your password"
+                  leftSection={<IconLock size={16} />}
+                />
+                <Button
+                  fullWidth
+                  type="submit"
+                  loading={loading}
+                  mt="sm"
+                >
+                  Login
+                </Button>
+              </Stack>
+            </form>
 
-            <label className="flex flex-col text-gray-700 font-medium">
-              Password
-              <input
-                type="password"
-                name="password"
-                className="mt-1 px-3 py-2 border-2 border-gray-300 rounded-md outline-none focus:border-green-500 text-gray-700"
-              />
-            </label>
-
-            <button
-              type="submit"
-              className="w-full py-2 bg-green-500 hover:bg-green-600 active:bg-green-700 rounded-md text-white font-semibold transition"
-            >
-              Login
-            </button>
-          </form>
-
-          <p className="mt-4 text-center text-gray-600 text-sm">
-            Don't have an account?{' '}
-            <a href="/register" className="text-cyan-500 hover:underline">
-              Register
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
+            <Group justify="center" gap={4}>
+              <Text size="sm" c="dimmed">Don&apos;t have an account?</Text>
+              <Anchor component={Link} to="/register" size="sm">Register</Anchor>
+            </Group>
+          </Stack>
+        </Card>
+      </Center>
+    </Container>
   )
 }
 

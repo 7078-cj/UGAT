@@ -1,86 +1,127 @@
-import React, { useContext } from 'react'
-import { useNavigate } from 'react-router-dom';
-import AuthContext from '../Contexts/AuthContext';
-
+import { useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import AuthContext from '../context/AuthContext'
+import {
+  Alert,
+  Anchor,
+  Button,
+  Card,
+  Center,
+  Container,
+  Grid,
+  Group,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+  Title
+} from '@mantine/core'
+import { useForm } from '@mantine/form'
+import {
+  IconAlertCircle,
+  IconAt,
+  IconLock,
+  IconUser
+} from '@tabler/icons-react'
 
 function Register() {
-    const nav = useNavigate()
-    let {loginUser} = useContext(AuthContext)
+  const nav = useNavigate()
+  const { loginUser } = useContext(AuthContext)
+  const [loading, setLoading] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
-    var RegisterUser = async(e) =>{
-        e.preventDefault();
-        const url = import.meta.env.VITE_API_URL
+  const form = useForm({
+    initialValues: {
+      first_name: '',
+      last_name: '',
+      username: '',
+      email: '',
+      password: ''
+    },
+    validate: {
+      first_name: (value) => (value.trim().length < 2 ? 'First name is required' : null),
+      last_name: (value) => (value.trim().length < 2 ? 'Last name is required' : null),
+      username: (value) => (value.trim().length < 3 ? 'Username must be at least 3 characters' : null),
+      email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Enter a valid email address'),
+      password: (value) => (value.length < 8 ? 'Password must be at least 8 characters' : null),
+    },
+  })
 
-        let response = await fetch(
-          `${url}register/`,{
-            method: "POST",
-            headers:{
-              'Content-Type' : 'application/json',
-             
-            },
-            body :JSON.stringify({
-                                  'username' :e.target.username.value,
-                                    'email':e.target.email.value,
-                                  'password' :e.target.password.value,
-                                  
-                                  })
-          }
-        )
-        let data = await response.json()
-                
-                if (response.status ==200){
-                  loginUser(e)
-                  nav('/')
+  const RegisterUser = async (values) => {
+    setSubmitError('')
+    setLoading(true)
+    const url = import.meta.env.VITE_API_URL
+
+    const response = await fetch(`${url}register/admin`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values)
+    })
+
+    const data = await response.json()
+
+    if (response.status === 201) {
+      const fakeEvent = {
+        preventDefault: () => {},
+        target: {
+          username: { value: values.username },
+          password: { value: values.password },
+        },
       }
+      await loginUser(fakeEvent)
+      nav('/')
+    } else {
+      console.error(data)
+      setSubmitError(data?.detail || "Registration failed")
     }
+    setLoading(false)
+  }
+
   return (
-    <div className='flex flex-col justify-center items-center h-screen'>
-      <div className="w-full max-w-md bg-white shadow-md rounded-lg p-8">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Register</h2>
-        <form onSubmit={RegisterUser} className="flex flex-col space-y-4">
-          <label className="flex flex-col text-gray-700 font-medium">
-                Username
-                <input
-                  type="text"
-                  name="username"
-                  className="mt-1 px-3 py-2 border-2 border-gray-300 rounded-md outline-none focus:border-green-500 text-gray-700"
-                />
-              </label>
-          
-          <label className="flex flex-col text-gray-700 font-medium">
-                Email
-                <input
-                  type="text"
-                  name="email"
-                  className="mt-1 px-3 py-2 border-2 border-gray-300 rounded-md outline-none focus:border-green-500 text-gray-700"
-                />
-              </label>
-          
-          <label className="flex flex-col text-gray-700 font-medium">
-                Password
-                <input
-                  type="password"
-                  name="password"
-                  className="mt-1 px-3 py-2 border-2 border-gray-300 rounded-md outline-none focus:border-green-500 text-gray-700"
-                />
-              </label>
-          <button
-                type="submit"
-                className="w-full py-2 bg-green-500 hover:bg-green-600 active:bg-green-700 rounded-md text-white font-semibold transition"
-              >
-                Register
-              </button>
-      </form>
-     <p className="mt-4 text-center text-gray-600 text-sm">
-            Already have an account?{' '}
-            <a href="/register" className="text-cyan-500 hover:underline">
-              Login
-            </a>
-          </p>
-      </div>
-  
-        
-      </div>
+    <Container size="sm" py={48}>
+      <Center mih="85vh">
+        <Card shadow="lg" w="100%" maw={560} p="xl">
+          <Stack gap="lg">
+            <Stack gap={4} align="center">
+              <Title order={2}>Create admin account</Title>
+              <Text c="dimmed" size="sm">Set up your UGAT admin access</Text>
+            </Stack>
+
+            <form onSubmit={form.onSubmit(RegisterUser)}>
+              <Stack gap="sm">
+                <Grid>
+                  <Grid.Col span={{ base: 12, sm: 6 }}>
+                    <TextInput label="First Name" placeholder="Juan" leftSection={<IconUser size={16} />} {...form.getInputProps('first_name')} />
+                  </Grid.Col>
+                  <Grid.Col span={{ base: 12, sm: 6 }}>
+                    <TextInput label="Last Name" placeholder="Dela Cruz" leftSection={<IconUser size={16} />} {...form.getInputProps('last_name')} />
+                  </Grid.Col>
+                </Grid>
+
+                <TextInput label="Username" placeholder="jdelacruz" leftSection={<IconUser size={16} />} {...form.getInputProps('username')} />
+                <TextInput label="Email" placeholder="juan@email.com" leftSection={<IconAt size={16} />} {...form.getInputProps('email')} />
+                <PasswordInput label="Password" placeholder="Minimum 8 characters" leftSection={<IconLock size={16} />} {...form.getInputProps('password')} />
+
+                {submitError && (
+                  <Alert color="red" icon={<IconAlertCircle size={16} />} variant="light">
+                    {submitError}
+                  </Alert>
+                )}
+
+                <Button fullWidth type="submit" loading={loading} mt="sm">Register</Button>
+              </Stack>
+            </form>
+
+            <Group justify="center" gap={4}>
+              <Text size="sm" c="dimmed">Already have an account?</Text>
+              <Anchor component={Link} to="/login" size="sm">Login</Anchor>
+            </Group>
+          </Stack>
+        </Card>
+      </Center>
+    </Container>
   )
 }
 

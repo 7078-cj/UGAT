@@ -1,14 +1,20 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import AuthContext from './AuthContext'
 
-function PrivateRoutes({children,...rest}) {
-    
-    let {user} = useContext(AuthContext)
+function PrivateRoutes({ children, ...rest }) {
+    const { user, logoutUser } = useContext(AuthContext)
 
-  
-    return user ? <Outlet /> : <Navigate to="/login" />;
-  
+    useEffect(() => {
+        if (user && user.role !== 'admin') {
+            logoutUser()
+        }
+    }, [user])
+
+    if (!user) return <Navigate to="/login" />
+    if (user.role !== 'admin') return <Navigate to="/login" />
+
+    return <Outlet />
 }
 
 export default PrivateRoutes

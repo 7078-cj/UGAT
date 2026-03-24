@@ -7,7 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from ..serializers import UserSerializer
 import os
 from django.conf import settings
-from ..models import Profile
+from ..models import Profile, Farm
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -17,6 +18,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         
         token['username'] = user.username
+        token['role'] = user.profile.role
+
         
         return token
     
@@ -38,13 +41,14 @@ def registerUser(request):
     if serializer.is_valid():
         user = serializer.save()
         Profile.objects.create(user=user, role='customer')
+        
         return Response({'message': 'User registered successfully'}, status=201)
     return Response(serializer.errors, status=400)
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def registerUserProvider(request):
+def registerFarmer(request):
     if request.user.profile.role != 'admin':
         return Response(
             {'detail': 'Only admins can register service providers.'},
@@ -54,9 +58,24 @@ def registerUserProvider(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        Profile.objects.create(user=user, role='farmer') 
+        Profile.objects.create(user=user, role='farmer')
+        Farm.objects.create(owner=user, name=f"{user.username}'s farm")
         return Response({'message': 'Farmer registered successfully'}, status=201)
     return Response(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_users_by_role(request):
+    role = request.GET.get('role')
+
+    if not role:
+        return Response({'error': 'Role parameter is required'}, status=400)
+
+    users = User.objects.filter(profile__role=role)
+
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data, status=200)
 
 @api_view(['GET'])
 def test(request):

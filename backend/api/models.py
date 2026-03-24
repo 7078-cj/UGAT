@@ -23,7 +23,7 @@ class Profile(models.Model):
 class Farm(models.Model):
     owner = models.ForeignKey(User, related_name='farm', on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
-    description = models.CharField(max_length=1000)
+    description = models.CharField(max_length=1000, blank=True, null=True)
     address = models.CharField(max_length=500, blank=True, null=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
