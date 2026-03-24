@@ -23,7 +23,8 @@ export default function Sidebar({ active, setTab, onRegister }) {
           p="xs"
           radius="md"
           style={{
-            background: "linear-gradient(135deg, var(--mantine-color-ube-2), var(--mantine-color-ube-0))",
+            background:
+              "linear-gradient(135deg, var(--mantine-color-ube-2), var(--mantine-color-neutral-0))",
           }}
         >
           <Text fw={700} size="lg" c="ube.8">UGAT</Text>
@@ -58,6 +59,7 @@ export default function Sidebar({ active, setTab, onRegister }) {
       <Divider />
       <Button
         variant="light"
+        color="secondary"
         leftSection={<IconWheat size={16} />}
         justify="flex-start"
         onClick={() => onRegister("farmer")}
@@ -67,6 +69,7 @@ export default function Sidebar({ active, setTab, onRegister }) {
       </Button>
       <Button
         variant="light"
+        color="tertiary"
         leftSection={<IconPlus size={16} />}
         justify="flex-start"
         onClick={() => onRegister("customer")}

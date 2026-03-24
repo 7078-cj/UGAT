@@ -32,7 +32,8 @@ export default function AdminPanel() {
           padding="md"
           styles={{
             main: {
-              background: "var(--mantine-color-gray-0)",
+              background:
+                "linear-gradient(180deg, var(--mantine-color-neutral-0) 0%, var(--mantine-color-neutral-1) 100%)",
             },
           }}
         >

@@ -21,7 +21,8 @@ export default function TopBar({ tab }) {
       py="sm"
       style={{
         borderBottom: "1px solid var(--mantine-color-ube-1)",
-        background: "linear-gradient(90deg, rgba(247,241,255,.95) 0%, rgba(255,255,255,1) 45%)",
+        background:
+          "linear-gradient(90deg, var(--mantine-color-ube-0) 0%, var(--mantine-color-neutral-0) 50%, #ffffff 100%)",
       }}
     >
       <Group justify="space-between" h="100%">
@@ -38,7 +39,7 @@ export default function TopBar({ tab }) {
           </div>
         </Group>
         <Group gap="xs">
-          <Badge variant="light" color="ube">Admin</Badge>
+          <Badge variant="light" color="secondary">Admin</Badge>
           <ActionIcon variant="light" color="ube" aria-label="Notifications">
             <IconBell size={16} />
           </ActionIcon>
