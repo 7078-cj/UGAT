@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Portfolio, Farm, Export
+from .models import Portfolio, Farm, Export, Cart, Profile
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -72,3 +72,24 @@ class FarmSerializer(serializers.ModelSerializer):
         model = Farm
         fields = ['id', 'owner', 'name', 'description',
                 'address', 'latitude', 'longitude', 'export']
+        
+class CartSerializer(serializers.ModelSerializer):
+    customer = PublicUserSerializer(read_only=True)
+    export = ExportSerializer(read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'customer', 'export', 'added_at']
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('id', 'username', 'first_name', 'last_name', 'profile_image', 'address', 'role', 'phone')
+
+        
+class UserProfileSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer(source='profile', read_only=True)
+    cart = CartSerializer(many=True, read_only=True)
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'profile')

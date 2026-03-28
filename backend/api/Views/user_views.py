@@ -4,11 +4,13 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from ..serializers import UserSerializer
+from ..serializers import UserSerializer, CartSerializer
 import os
 from django.conf import settings
-from ..models import Profile, Farm
+from ..models import Profile, Farm, Cart, Export
 from django.contrib.auth.models import User
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.exceptions import NotFound
 
 
 # Create your views here.
@@ -81,3 +83,51 @@ def get_users_by_role(request):
 def test(request):
     
     return Response('Hello')
+
+class UserDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+    
+class CartListCreateView(ListCreateAPIView):
+    serializer_class = CartSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Cart.objects.filter(customer=self.request.user).select_related('export__farm')
+
+    def perform_create(self, serializer):
+        export_id = self.request.data.get('export_id')
+        try:
+            export = Export.objects.get(id=export_id)
+        except Export.DoesNotExist:
+            raise NotFound('Export not found.')
+        
+        serializer.save(customer=self.request.user, export=export)
+        
+class CartDetailView(RetrieveUpdateDestroyAPIView):
+    serializer_class = CartSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Cart.objects.filter(customer=self.request.user).select_related('export__farm')
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.customer != self.request.user:
+            raise NotFound('Cart item not found.')
+        return obj
+    
+class UserProfileView(RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def has_object_permission(self, request, view, obj):
+        return obj == request.user
+

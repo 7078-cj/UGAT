@@ -8,7 +8,10 @@ from .Views.user_views import ( registerUser,
                                 test,
                                 registerAdmin,
                                 registerFarmer,
-                                get_users_by_role
+                                get_users_by_role,
+                                UserDetailView,
+                                CartListCreateView,
+                                CartDetailView
                                 )
 from .Views.farm_views import (
     FarmListCreateView,
@@ -28,6 +31,10 @@ urlpatterns = [
     path('register/farmer', registerFarmer, name='register_farmer'),
     path('register/admin', registerAdmin, name='register_admin'),
     path('users/', get_users_by_role, name='get_user_by_role'),
+    path('users/me/', UserDetailView.as_view(), name='user_detail'),
+    
+    path('carts/', CartListCreateView.as_view(), name='cart_list_create'),
+    path('carts/<int:pk>/', CartDetailView.as_view(), name='cart_detail'),
     
     path('farms/',                 FarmListCreateView.as_view(),    name='farm_list_create'),
     path('farms/<int:pk>/',        FarmDetailView.as_view(),        name='farm_detail'),

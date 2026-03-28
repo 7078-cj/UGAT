@@ -67,3 +67,11 @@ class Portfolio(models.Model):
     
     def __str__(self):
         return self.photo.name if self.photo else "No Photo" 
+    
+class Cart(models.Model):
+    customer = models.ForeignKey(User, related_name='cart', on_delete=models.CASCADE)
+    export = models.ForeignKey(Export, related_name='cart', on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.customer.username} - {self.export.farm.name} - {self.quantity}"
